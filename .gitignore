@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Playwright cache
+playwright-report/
+test-results/
+
+# Database local files
+*.db
+
+# Node (if frontend)
+node_modules/
+dist/
