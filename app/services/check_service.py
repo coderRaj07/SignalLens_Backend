@@ -67,14 +67,17 @@ class CheckService:
 
                     numeric_significant = is_significant_change(change_percentage)
 
-                    semantic_significant = (
-                        "no meaningful" not in summary.lower()
-                        and "skipped" not in summary.lower()
-                        and "initial snapshot" not in summary.lower()
+                    summary_lower = summary.lower()
+
+                    semantic_significant = not (
+                        "no meaningful business changes detected" in summary_lower
+                        or "change too small" in summary_lower
+                        or "initial snapshot" in summary_lower
                     )
 
-                    # Hybrid logic (safe & reviewer-friendly)
-                    significant = numeric_significant and semantic_significant
+                    # Balanced hybrid logic
+                    significant = numeric_significant or semantic_significant
+
 
                 else:
                     summary = "Initial snapshot — no comparison available."
