@@ -2,8 +2,17 @@ from fastapi import FastAPI
 from app.api import competitors, checks, status
 from app.models import Base
 from app.db.database import engine
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Competitive Intelligence Tracker")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # For demo (restrict later)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(competitors.router, prefix="/competitors")
 app.include_router(checks.router, prefix="/checks")
