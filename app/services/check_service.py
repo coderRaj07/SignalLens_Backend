@@ -10,6 +10,7 @@ from app.repositories.snapshot_repo import SnapshotRepository
 from app.repositories.check_repo import CheckRepository
 from app.repositories.competitor_repo import CompetitorRepository
 
+
 class CheckService:
 
     def __init__(self):
@@ -25,14 +26,19 @@ class CheckService:
                 if not competitor:
                     return
 
+                # ---------------- FETCH ----------------
                 try:
                     raw_html = await fetch_url(competitor.url)
                     content = extract_main_content(raw_html)
                 except Exception as e:
                     await self.check_repo.create(
-                        db, competitor_id, None, "",
-                        f"Fetch failed: {str(e)}",
-                        0.0, False
+                        db=db,
+                        competitor_id=competitor_id,
+                        snapshot_id=None,
+                        diff="",
+                        summary=f"Fetch failed: {str(e)}",
+                        change_percentage=0.0,
+                        is_significant=False
                     )
                     return
 
@@ -44,27 +50,47 @@ class CheckService:
                 change_percentage = 0.0
                 significant = False
 
+                # ---------------- COMPARE ----------------
                 if last_snapshot:
                     diff = generate_diff(last_snapshot.content, content)
+
                     change_percentage = calculate_change_percentage(
-                        last_snapshot.content, content
-                    )
-                    significant = (
-                        is_significant_change(change_percentage)
-                        and "no meaningful" not in summary.lower()
+                        last_snapshot.content,
+                        content
                     )
 
                     summary = await summarize_diff(diff, change_percentage)
+
+                    numeric_significant = is_significant_change(change_percentage)
+
+                    semantic_significant = (
+                        "no meaningful" not in summary.lower()
+                        and "skipped" not in summary.lower()
+                        and "initial snapshot" not in summary.lower()
+                    )
+
+                    # Hybrid logic (safe & reviewer-friendly)
+                    significant = numeric_significant and semantic_significant
+
                 else:
                     summary = "Initial snapshot — no comparison available."
+                    significant = False
 
+                # ---------------- SAVE SNAPSHOT ----------------
                 snapshot = await self.snapshot_repo.create(
-                    db, competitor_id, content_hash, content
+                    db,
+                    competitor_id,
+                    content_hash,
+                    content
                 )
 
+                # ---------------- SAVE CHECK ----------------
                 await self.check_repo.create(
-                    db, competitor_id, snapshot.id,
-                    diff, summary,
+                    db,
+                    competitor_id,
+                    snapshot.id,
+                    diff,
+                    summary,
                     change_percentage,
                     significant
                 )
