@@ -65,12 +65,23 @@ class CheckService:
                         competitor.url
                     )
 
-                    summary = summary_data.get("summary", "")
-                    semantic_significant = summary_data.get("significant", False)
+                    # -------- Normalize summary safely --------
+                    if isinstance(summary_data, dict):
+                        raw_summary = summary_data.get("summary", "")
+                        semantic_significant = summary_data.get("significant", False)
+                    else:
+                        raw_summary = str(summary_data)
+                        semantic_significant = False
+
+                    # Convert list → formatted string
+                    if isinstance(raw_summary, list):
+                        summary = "\n".join(f"- {item}" for item in raw_summary)
+                    else:
+                        summary = str(raw_summary)
 
                     numeric_significant = is_significant_change(change_percentage)
 
-                    # Final decision
+                    # Final decision (safe hybrid logic)
                     significant = semantic_significant or numeric_significant
 
                 else:
