@@ -59,7 +59,11 @@ class CheckService:
                         content
                     )
 
-                    summary = await summarize_diff(diff, change_percentage)
+                    summary = await summarize_diff(
+                        diff,
+                        change_percentage,
+                        competitor.url
+                    )
 
                     numeric_significant = is_significant_change(change_percentage)
 
