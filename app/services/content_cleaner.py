@@ -30,5 +30,4 @@ def normalize_text(text: str) -> str:
     """
     text = re.sub(r"\s+", " ", text)  # collapse whitespace
     text = re.sub(r"\d{1,2}:\d{2}", "", text)  # remove timestamps like 12:45
-    text = re.sub(r"\b\d+\b", "", text)  # remove isolated numbers (vote counts etc.)
     return text.strip()
