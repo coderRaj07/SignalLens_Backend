@@ -59,25 +59,19 @@ class CheckService:
                         content
                     )
 
-                    summary = await summarize_diff(
+                    summary_data = await summarize_diff(
                         diff,
                         change_percentage,
                         competitor.url
                     )
 
+                    summary = summary_data.get("summary", "")
+                    semantic_significant = summary_data.get("significant", False)
+
                     numeric_significant = is_significant_change(change_percentage)
 
-                    summary_lower = summary.lower()
-
-                    semantic_significant = not (
-                        "no meaningful business changes detected" in summary_lower
-                        or "change too small" in summary_lower
-                        or "initial snapshot" in summary_lower
-                    )
-
-                    # Balanced hybrid logic
-                    significant = numeric_significant or semantic_significant
-
+                    # Final decision
+                    significant = semantic_significant or numeric_significant
 
                 else:
                     summary = "Initial snapshot — no comparison available."
