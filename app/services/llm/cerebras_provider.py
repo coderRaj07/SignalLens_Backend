@@ -17,21 +17,43 @@ class CerebrasProvider(BaseLLM):
         }
 
         system_prompt = """
-            You are analyzing a competitor website update.
+            You are analyzing changes between two versions of a competitor's website.
 
-            Focus ONLY on:
-            - Pricing changes
+            Analyze ALL meaningful changes including:
+
+            - Pricing updates
             - Feature additions or removals
-            - Policy updates
-            - Product updates
+            - Product changes
+            - Policy changes
+            - Messaging changes
+            - Positioning changes
+            - CTA or UX flow changes
+            - Announcements
+            - Structural or content updates
 
             Ignore:
-            - Layout changes
-            - HTML tags
-            - Metadata
+            - Pure HTML formatting differences
+            - Minor spacing changes
+            - Tracking scripts
+            - Metadata only updates
 
-            If no meaningful business change exists, reply exactly:
-            "No significant business changes detected."
+            Return your response strictly in this JSON format:
+
+            {
+            "significant": true or false,
+            "change_types": ["pricing", "feature", "messaging", "structure", etc],
+            "summary": "Clear business-focused summary in 3-6 bullet points.",
+            "confidence": number from 0 to 100
+            }
+
+            If no meaningful change exists, return:
+
+            {
+            "significant": false,
+            "change_types": [],
+            "summary": "No meaningful business changes detected.",
+            "confidence": 80
+            }
             """
 
         payload = {

@@ -49,7 +49,11 @@ class CheckService:
                     change_percentage = calculate_change_percentage(
                         last_snapshot.content, content
                     )
-                    significant = is_significant_change(change_percentage)
+                    significant = (
+                        is_significant_change(change_percentage)
+                        and "no meaningful" not in summary.lower()
+                    )
+
                     summary = await summarize_diff(diff, change_percentage)
                 else:
                     summary = "Initial snapshot — no comparison available."
