@@ -1,13 +1,25 @@
 def is_valid_content(content: str) -> bool:
-    if not content or len(content) < 1000:
+    if not content:
+        return False
+
+    if len(content) < 800:
         return False
 
     lowered = content.lower()
 
-    if "enable javascript" in lowered:
+    # Detect bot protection pages
+    blocked_signatures = [
+        "enable javascript",
+        "access denied",
+        "request blocked",
+        "captcha",
+        "verify you are human"
+    ]
+
+    if any(sig in lowered for sig in blocked_signatures):
         return False
 
-    if '<div id="root"></div>' in lowered:
+    if "<html" not in lowered:
         return False
 
     return True
