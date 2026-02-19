@@ -8,9 +8,9 @@ async def fetch_via_browser(url: str) -> str:
         browser = await p.chromium.launch(
             headless=True,
             args=[
-                "--disable-blink-features=AutomationControlled",
                 "--no-sandbox",
-                "--disable-dev-shm-usage"
+                "--disable-dev-shm-usage",
+                "--disable-setuid-sandbox",
             ]
         )
 
