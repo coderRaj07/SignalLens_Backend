@@ -1,3 +1,4 @@
+from app.services.content_cleaner import extract_main_content
 from sqlalchemy.exc import SQLAlchemyError
 from app.db.session import AsyncSessionLocal
 from app.services.fetcher import fetch_url
@@ -25,7 +26,8 @@ class CheckService:
                     return
 
                 try:
-                    content = await fetch_url(competitor.url)
+                    raw_html = await fetch_url(competitor.url)
+                    content = extract_main_content(raw_html)
                 except Exception as e:
                     await self.check_repo.create(
                         db, competitor_id, None, "",
