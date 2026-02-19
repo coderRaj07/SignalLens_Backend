@@ -27,7 +27,6 @@ async def summarize_diff(diff: str, change_percentage: float) -> str:
                 - Layout changes
                 - HTML tags
                 - Metadata
-                - Small numeric changes (timestamps, vote counts, etc.)
 
                 If no meaningful business change exists, reply exactly:
                 "No significant business changes detected."
